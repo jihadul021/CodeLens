@@ -1,18 +1,17 @@
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from routers import github
+from database import init_db
 
 load_dotenv()
 
 app = FastAPI(
-    title="RepoMind API",
+    title="CodeLens API",
     description="Ask questions about any GitHub codebase using RAG",
     version="0.1.0",
 )
 
-# CORS: allows your Next.js frontend (localhost:3000) to talk to this backend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000"],
@@ -23,8 +22,10 @@ app.add_middleware(
 
 app.include_router(github.router)
 
+@app.on_event("startup")
+async def startup():
+    await init_db()
 
 @app.get("/health")
 async def health_check():
-    """Simple endpoint to confirm the server is running."""
-    return {"status": "ok", "service": "RepoMind API"}
+    return {"status": "ok", "service": "CodeLens API"}
