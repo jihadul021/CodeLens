@@ -1,13 +1,4 @@
-def chunk_code(content: str, file_path: str, chunk_size: int = 40, overlap: int = 5) -> list[str]:
-    """
-    Split a file's content into overlapping chunks of lines.
-    
-    chunk_size=40 means each chunk is 40 lines.
-    overlap=5 means consecutive chunks share 5 lines.
-    
-    Overlap is important — if a concept spans a chunk boundary,
-    the overlap ensures it's fully captured in at least one chunk.
-    """
+def chunk_code(content: str, file_path: str, chunk_size: int = 40, overlap: int = 5) -> list[dict]:
     lines = content.split("\n")
     chunks = []
     start = 0
@@ -17,10 +8,13 @@ def chunk_code(content: str, file_path: str, chunk_size: int = 40, overlap: int 
         chunk_lines = lines[start:end]
         chunk_text = "\n".join(chunk_lines).strip()
 
-        if chunk_text:  # skip empty chunks
-            # Prepend file path so the LLM knows where this code lives
-            chunks.append(f"File: {file_path}\n\n{chunk_text}")
+        if chunk_text:
+            chunks.append({
+                "text": f"File: {file_path}\n\n{chunk_text}",
+                "start_line": start + 1,   # 1-indexed for GitHub URLs
+                "end_line": min(end, len(lines)),
+            })
 
-        start += chunk_size - overlap  # move forward with overlap
+        start += chunk_size - overlap
 
     return chunks

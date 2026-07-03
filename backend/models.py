@@ -24,3 +24,5 @@ class CodeChunk(Base):
     content = Column(Text, nullable=False)
     embedding = Column(Vector(768))
     created_at = Column(DateTime, server_default=func.now())
+    start_line = Column(Integer) 
+    end_line = Column(Integer)  
