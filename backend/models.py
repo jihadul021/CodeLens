@@ -22,5 +22,5 @@ class CodeChunk(Base):
     repo_id = Column(Integer, ForeignKey("repos.id"), nullable=False)
     file_path = Column(String, nullable=False)
     content = Column(Text, nullable=False)
-    embedding = Column(Vector(1536))
+    embedding = Column(Vector(768))
     created_at = Column(DateTime, server_default=func.now())
