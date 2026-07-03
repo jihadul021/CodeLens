@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from routers import github
 from database import init_db
+from routers.query import router as query_router
 
 load_dotenv()
 
@@ -21,6 +22,7 @@ app.add_middleware(
 )
 
 app.include_router(github.router)
+app.include_router(query_router)
 
 @app.on_event("startup")
 async def startup():
