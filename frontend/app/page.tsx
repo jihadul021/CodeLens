@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -19,6 +19,28 @@ export default function Home() {
   const [repoUrl, setRepoUrl] = useState("");
   const [status, setStatus] = useState<string>("idle");
   const [log, setLog] = useState<string>("");
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  function pollStatus(owner: string, repo: string) {
+    // clear any previous poller before starting a new one
+    if (pollRef.current) clearInterval(pollRef.current);
+
+    pollRef.current = setInterval(async () => {
+      const res = await fetch(`${API_URL}/github/status?owner=${owner}&repo=${repo}`);
+      if (!res.ok) {
+        // 404 = row not created yet, keep polling
+        return;
+      }
+      const data = await res.json();
+      console.log("status:", data);
+      setLog(JSON.stringify(data, null, 2));
+
+      if (data.status === "done" || data.status === "failed") {
+        if (pollRef.current) clearInterval(pollRef.current);
+        setStatus(data.status);
+      }
+    }, 2000);
+  }
 
   async function handleIngest() {
     const parsed = parseGithubUrl(repoUrl);
@@ -37,8 +59,9 @@ export default function Home() {
     });
     const data = await res.json();
     console.log("ingest response:", data);
-    setLog(JSON.stringify(data, null, 2));
     setStatus("indexing");
+
+    pollStatus(parsed.owner, parsed.repo);
   }
 
   return (
@@ -59,7 +82,7 @@ export default function Home() {
         </button>
       </div>
       <p className="text-sm text-gray-500">Status: {status}</p>
-      <pre className="text-xs bg--100 p-4 rounded w-full max-w-xl overflow-auto">
+      <pre className="text-xs bg-gray-100 p-4 rounded w-full max-w-xl overflow-auto">
         {log}
       </pre>
     </main>
