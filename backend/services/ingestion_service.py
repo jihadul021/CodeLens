@@ -39,18 +39,19 @@ async def ingest_repo(url: str) -> None:
             for file in files:
                 print(f"⚙️ Processing {file['path']}")
                 chunks = chunk_code(file["content"], file["path"])
-                
                 if not chunks:
                     continue
 
-                # One API call for all chunks in this file
-                embeddings = await get_embeddings_batch(chunks)
+                texts = [c["text"] for c in chunks]
+                embeddings = await get_embeddings_batch(texts)
 
-                for chunk_text, embedding in zip(chunks, embeddings):
+                for chunk_data, embedding in zip(chunks, embeddings):
                     chunk = CodeChunk(
                         repo_id=repo.id,
                         file_path=file["path"],
-                        content=chunk_text,
+                        content=chunk_data["text"],
+                        start_line=chunk_data["start_line"],   # new column
+                        end_line=chunk_data["end_line"],       # new column
                         embedding=embedding,
                     )
                     db.add(chunk)
@@ -70,3 +71,5 @@ async def ingest_repo(url: str) -> None:
             repo.status = "failed"
             await db.commit()
             raise e
+        
+        
