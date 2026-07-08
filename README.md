@@ -1,5 +1,7 @@
 # CodeLens
 
+## Live Demo: https://code-lens-beta.vercel.app/
+
 Ask any public GitHub repository a question in natural language and get a streamed, source-cited answer — pointing straight back to the exact file and line range the answer came from.
 
 CodeLens ingests a repo, chunks and embeds its source code, and uses retrieval-augmented generation (RAG) to answer natural-language questions grounded in the actual codebase — not a general-purpose LLM guess.
