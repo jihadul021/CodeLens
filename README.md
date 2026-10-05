@@ -125,7 +125,11 @@ Visit `http://localhost:3000`.
 
 ```
 codelens/
+├── .env.example             # Docker environment variable template
+├── compose.yaml             # frontend, API, and pgvector services
 ├── backend/
+│   ├── Dockerfile
+│   ├── .dockerignore
 │   ├── main.py
 │   ├── database.py
 │   ├── models.py
@@ -140,6 +144,8 @@ codelens/
 │       ├── query_service.py      # vector similarity search
 │       └── answer_service.py   
 └── frontend/
+    ├── Dockerfile
+    ├── .dockerignore
     └── app/
-        └── page.tsx        
+        └── page.tsx
 ```
