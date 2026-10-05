@@ -39,7 +39,31 @@ CodeLens ingests a repo, chunks and embeds its source code, and uses retrieval-a
 
 ## Getting started
 
-### Prerequisites
+### Run with Docker
+
+Prerequisites: Docker Engine and the Docker Compose plugin.
+
+1. Create the local environment file and add your Jina and Groq API keys:
+
+    ```bash
+    cp .env.example .env
+    ```
+
+    `GITHUB_TOKEN` is optional for public repositories, but can help avoid GitHub API rate limits. Keep `.env` private.
+
+2. Build and start the app from the project root:
+
+    ```bash
+    docker compose up --build
+    ```
+
+3. Open <http://localhost:3000>. The API is available at <http://localhost:8000>; PostgreSQL data is stored in the `postgres_data` Docker volume.
+
+Stop with `Ctrl+C` or run `docker compose down`. The database volume is retained when services stop.
+
+### Local development (without Docker)
+
+Prerequisites:
 
 - Python 3.10+
 - Node.js 18+
